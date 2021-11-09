@@ -111,7 +111,7 @@ then
 	# prefix with 'v'
 	if $with_v
 	then
-		new="v$new"
+		new="b$new"
 	fi
 fi
 
