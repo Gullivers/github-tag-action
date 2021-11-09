@@ -47,12 +47,12 @@ git fetch --tags
 # get latest tag that looks like a semver (with or without v)
 case "$tag_context" in
     *repo*) 
-        tag=$(git for-each-ref --sort=-v:refname --format '%(refname:lstrip=2)' | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+$" | head -n1)
-        pre_tag=$(git for-each-ref --sort=-v:refname --format '%(refname:lstrip=2)' | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+(-$suffix\.[0-9]+)?$" | head -n1)
+        tag=$(git for-each-ref --sort=-v:refname --format '%(refname:lstrip=2)' | grep -E "^b(?:(?:0|[1-9][0-9]*)[.](?:[0-9]{4}))" | head -n1)
+        pre_tag=$(git for-each-ref --sort=-v:refname --format '%(refname:lstrip=2)' | grep -E "^b(?:(?:0|[1-9][0-9]*)[.](?:[0-9]{4}))" | head -n1)
         ;;
     *branch*) 
-        tag=$(git tag --list --merged HEAD --sort=-v:refname | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+$" | head -n1)
-        pre_tag=$(git tag --list --merged HEAD --sort=-v:refname | grep -E "^v?[0-9]+\.[0-9]+\.[0-9]+(-$suffix\.[0-9]+)?$" | head -n1)
+        tag=$(git tag --list --merged HEAD --sort=-v:refname | grep -E "^b(?:(?:0|[1-9][0-9]*)[.](?:[0-9]{4}))" | head -n1)
+        pre_tag=$(git tag --list --merged HEAD --sort=-v:refname | grep -E "^b(?:(?:0|[1-9][0-9]*)[.](?:[0-9]{4}))" | head -n1)
         ;;
     * ) echo "Unrecognised context"; exit 1;;
 esac
@@ -103,16 +103,6 @@ case "$log" in
         ;;
 esac
 
-if $pre_release
-then
-    # Already a prerelease available, bump it
-    if [[ "$pre_tag" == *"$new"* ]]; then
-        new=$(semver -i prerelease $pre_tag --preid $suffix); part="pre-$part"
-    else
-        new="$new-$suffix.1"; part="pre-$part"
-    fi
-fi
-
 echo $part
 
 # did we get a new tag?
@@ -130,12 +120,7 @@ then
     new="$custom_tag"
 fi
 
-if $pre_release
-then
-    echo -e "Bumping tag ${pre_tag}. \n\tNew tag ${new}"
-else
-    echo -e "Bumping tag ${tag}. \n\tNew tag ${new}"
-fi
+echo -e "Bumping tag ${tag}. \n\tNew tag ${new}"
 
 # set outputs
 echo ::set-output name=new_tag::$new
