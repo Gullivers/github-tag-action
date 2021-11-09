@@ -1,0 +1,3 @@
+[submodule "semver-tool"]
+	path = semver-tool
+	url = git@github.com:Gullivers/semver-tool.git
